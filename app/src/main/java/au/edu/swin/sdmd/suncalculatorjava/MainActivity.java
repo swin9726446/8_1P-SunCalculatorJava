@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.View;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initaliseUI();
-        populateBookData();
+        populatePlaceData();
 
     }
 
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Read cities from file.
      */
-    private void populateBookData() {
+    private void populatePlaceData() {
         try {
             String strAry[];
             String string;
