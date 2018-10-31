@@ -29,6 +29,8 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
         final TextView title;
         final TextView lat_long;
         final TextView locale;
+        //test
+        Place p;
 
         private PlaceViewHolder(View view) {
             super(view);
@@ -60,6 +62,8 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
         holder.title.setText(place.getName());
         holder.lat_long.setText(String.format("%s / %s", place.getLatitude(), place.getLongitude()));
         holder.locale.setText(place.getLocale());
+        holder.p = place;
+        holder.itemView.setTag(position);
     }
 
     //return size

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.TimeZone;
 
 import au.edu.swin.sdmd.suncalculatorjava.calc.AstronomicalCalendar;
 import au.edu.swin.sdmd.suncalculatorjava.calc.GeoLocation;
+import au.edu.swin.sdmd.suncalculatorjava.place.Place;
 
 public class ViewActivity extends AppCompatActivity {
 
@@ -34,21 +36,37 @@ public class ViewActivity extends AppCompatActivity {
     }
 
     private void updateTime(int year, int monthOfYear, int dayOfMonth) {
-        TimeZone tz = TimeZone.getDefault();
-        GeoLocation geolocation = new GeoLocation("Melbourne", -37.50, 145.01, tz);
-        AstronomicalCalendar ac = new AstronomicalCalendar(geolocation);
-        ac.getCalendar().set(year, monthOfYear, dayOfMonth);
-        Date srise = ac.getSunrise();
-        Date sset = ac.getSunset();
+//        TimeZone tz = TimeZone.getDefault();
+//        GeoLocation geolocation = new GeoLocation("Melbourne", -37.50, 145.01, tz);
+        try {
+            Place place = getIntent().getExtras().getParcelable("place");
+            if (place == null){
+                Log.e("metadata init","Couldn't find the Parcelled Image!");
+                finish();
+                return;
+            }
+            TimeZone tz = TimeZone.getTimeZone(place.getLocale());
+            GeoLocation geoLocation = new GeoLocation(place.getName(), place.getLatitude(), place.getLongitude(), tz);
+            AstronomicalCalendar ac = new AstronomicalCalendar(geoLocation);
+            ac.getCalendar().set(year, monthOfYear, dayOfMonth);
+            Date srise = ac.getSunrise();
+            Date sset = ac.getSunset();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-        TextView sunriseTV = findViewById(R.id.sunriseTimeTV);
-        TextView sunsetTV = findViewById(R.id.sunsetTimeTV);
-        Log.d("SUNRISE Unformatted", srise+"");
+            TextView sunriseTV = findViewById(R.id.sunriseTimeTV);
+            TextView sunsetTV = findViewById(R.id.sunsetTimeTV);
+            TextView locationTV = findViewById(R.id.locationTV);
+            Log.d("SUNRISE Unformatted", srise+"");
 
-        sunriseTV.setText(sdf.format(srise));
-        sunsetTV.setText(sdf.format(sset));
+            sunriseTV.setText(sdf.format(srise));
+            sunsetTV.setText(sdf.format(sset));
+            locationTV.setText(place.getName());
+
+        } catch (NullPointerException npe) {
+            Log.e("Bundle Error (View)", npe.toString());
+            finish();
+        }
     }
 
     DatePicker.OnDateChangedListener dateChangeHandler = new DatePicker.OnDateChangedListener()

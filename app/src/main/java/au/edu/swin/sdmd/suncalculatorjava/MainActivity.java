@@ -1,12 +1,19 @@
 package au.edu.swin.sdmd.suncalculatorjava;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,17 +57,46 @@ public class MainActivity extends AppCompatActivity {
      * Read cities from file.
      */
     private void populateBookData() {
-        
-//        //I wanted to give something interesting to look at.
-//        for (int i = 0; i < NUM_BOOKS; i += 1) {
-//            placeList.add(new Place(
-//                    "City No." + (i+1),
-//                    i + ".00",
-//                    "1" + i + "0.00",
-//                    "trial/error"
-//            ));
-//        }
+        try {
+            String strAry[];
+            String string;
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(getResources().openRawResource(R.raw.au_locations))
+            );
+            //for each line in the reader {
+            while ((string = bufferedReader.readLine()) != null){
+                strAry = string.split(",");
+                placeList.add(new Place(
+                        strAry[0],
+                        strAry[1],
+                        strAry[2],
+                        strAry[3]
+                ));
+            }
+            bufferedReader.close();
+        }
+        catch (Exception e) {
+            Log.e("Read Error", String.format("Couldn't read location data.\n%s", e.toString()));
+        }
 
         placeAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Send the chosen data to the view app and launch it.
+     * Code recycled from 5_2P
+     * @param view the view sending the request
+     */
+    public void viewTimes(View view){
+        Intent i = new Intent();
+        i.setClass(getApplicationContext(), ViewActivity.class);
+        int object = (int)view.getTag();
+        try{
+            i.putExtra("place", placeList.get(object));
+            startActivity(i);
+        }
+        catch (Exception e){
+            Log.e("viewTimes", e.toString());
+        }
     }
 }
